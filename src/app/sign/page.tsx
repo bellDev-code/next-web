@@ -1,4 +1,4 @@
-import SignComponent from "./SignComponent";
+import SignComponent from "@/components/client/SignForm";
 
 export const metadata = {
   title: "Run Run Web || Sign",
