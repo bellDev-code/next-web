@@ -2,17 +2,13 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-const schema = z.object({
-  email: z
-    .string()
-    .min(1, "이메일을 입력하세요.")
-    .email("올바른 이메일 형식을 입력하세요."),
-  password: z.string().min(6, "비밀번호는 최소 6자 이상이어야 합니다."),
-});
+import { useMutation } from "@tanstack/react-query";
+import { loginUser } from "@/lib/api/auth";
+import { LoginData } from "@/lib/types/auth";
+import { loginSchema } from "@/lib/validation/authSchema";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
@@ -21,14 +17,25 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(loginSchema),
   });
   const router = useRouter();
 
-  const onSubmit = async (data: { email: string; password: string }) => {
+  const mutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: () => {
+      router.push("/");
+    },
+    onError: (error: Error) => {
+      alert(error.message);
+    },
+  });
+
+  // 로그인 처리
+  const onSubmit = (data: LoginData) => {
     try {
-      console.log("로그인 요청:", data);
-      // 여기에 실제 로그인 요청을 보낼 수 있음 (예: API 호출)
+      useAuthStore.getState().login({ email: data.email });
+      mutation.mutate(data);
     } catch (error) {
       setErrorMessage("로그인 실패. 이메일 또는 비밀번호를 확인하세요.");
     }
