@@ -1,3 +1,9 @@
+import LoginComponent from "./LoginComponent";
+
+export const metadata = {
+  title: "Run Run Web || Login",
+};
+
 export default function LoginPage() {
-  return <div className="h-screen pt-16">로그인 페이지</div>;
+  return <LoginComponent />;
 }
