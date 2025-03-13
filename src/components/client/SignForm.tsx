@@ -1,49 +1,40 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { signUpUser } from "@/lib/api/auth";
+import { signUpSchema } from "@/lib/validation/authSchema";
 
-const schema = z
-  .object({
-    email: z
-      .string()
-      .min(1, "이메일을 입력하세요.")
-      .email("올바른 이메일 형식을 입력하세요."),
-    password: z.string().min(6, "비밀번호는 최소 6자 이상이어야 합니다."),
-    confirmPassword: z.string(),
-    gender: z.enum(["male", "female", "other"], {
-      required_error: "성별을 선택하세요.",
-    }),
-    height: z
-      .number()
-      .min(50, "신장을 입력하세요.")
-      .max(250, "정확한 신장을 입력하세요."),
-    weight: z
-      .number()
-      .min(20, "몸무게는 20kg 이상이어야 합니다.")
-      .max(300, "몸무게는 250kg 이하로 입력해주세요."),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "비밀번호가 일치하지 않습니다.",
-    path: ["confirmPassword"],
-  });
-
-export default function SignPage() {
+export default function SignForm() {
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(signUpSchema),
+  });
+
+  const mutation = useMutation({
+    mutationFn: signUpUser,
+    onSuccess: () => {
+      setSuccessMessage("회원가입이 완료되었습니다! 로그인해주세요.");
+      setErrorMessage("");
+    },
+    onError: (error: any) => {
+      setErrorMessage(error.message || "회원가입 중 오류가 발생했습니다.");
+      setSuccessMessage("");
+    },
   });
 
   const onSubmit = (data: any) => {
-    console.log("회원가입 요청:", data);
-    // 여기서 회원가입 요청 API를 호출할 수 있음
+    setErrorMessage(""); // 기존 에러 초기화
+    setSuccessMessage(""); // 성공 메시지 초기화
+    mutation.mutate(data);
   };
 
   return (
@@ -59,6 +50,9 @@ export default function SignPage() {
               className="w-full p-2 border rounded"
               placeholder="이메일을 입력하세요"
             />
+            {errors.email && (
+              <p className="text-red-500">{errors.email.message}</p>
+            )}
           </div>
           <div>
             <label className="block">성별</label>
@@ -82,6 +76,21 @@ export default function SignPage() {
               className="w-full p-2 border rounded"
               placeholder="키를 입력하세요"
             />
+            {errors.height && (
+              <p className="text-red-500">{errors.height.message}</p>
+            )}
+          </div>
+          <div>
+            <label className="block">몸무게 (kg)</label>
+            <input
+              type="number"
+              {...register("weight", { valueAsNumber: true })}
+              className="w-full p-2 border rounded"
+              placeholder="몸무게를 입력하세요"
+            />
+            {errors.weight && (
+              <p className="text-red-500">{errors.weight.message}</p>
+            )}
           </div>
           <div>
             <label className="block">비밀번호</label>
