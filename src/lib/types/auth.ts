@@ -11,3 +11,12 @@ export interface LoginData {
   email: string;
   password: string;
 }
+
+export type User = {
+  id: string;
+  email: string;
+  gender: string;
+  height: number;
+  weight: number;
+  createdAt: string;
+};

@@ -6,9 +6,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/lib/api/auth";
-import { LoginData } from "@/lib/types/auth";
+import { LoginData, User } from "@/lib/types/auth";
 import { loginSchema } from "@/lib/validation/authSchema";
-import { useAuthStore } from "@/lib/store/authStore";
+import { useAuth } from "@/lib/context/AuthContext";
 
 export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
@@ -19,11 +19,13 @@ export default function LoginPage() {
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
+  const { setUser } = useAuth();
   const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: () => {
+    onSuccess: (data: { user: User }) => {
+      setUser(data.user); // ✅ 로그인 후 상태 업데이트
       router.push("/");
     },
     onError: (error: Error) => {
@@ -34,7 +36,6 @@ export default function LoginPage() {
   // 로그인 처리
   const onSubmit = (data: LoginData) => {
     try {
-      useAuthStore.getState().login({ email: data.email });
       mutation.mutate(data);
     } catch (error) {
       setErrorMessage("로그인 실패. 이메일 또는 비밀번호를 확인하세요.");
