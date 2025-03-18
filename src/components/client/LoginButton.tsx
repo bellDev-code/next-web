@@ -10,7 +10,12 @@ export default function LoginButton() {
 
   return user ? (
     <div className="flex justify-between">
-      <p className="text-gray-700 font-medium pr-3">{user.email}</p>
+      <Link
+        href="/profile"
+        className="text-gray-700 font-medium pr-3 cursor-pointer"
+      >
+        {user.email}
+      </Link>
       <button
         className="text-gray-700 font-medium hover:underline cursor-pointer"
         onClick={logout}

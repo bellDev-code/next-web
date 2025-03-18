@@ -5,6 +5,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 interface User {
   id: string;
   email: string;
+  gender?: string;
+  height?: string;
+  weight?: string;
 }
 
 interface AuthContextType {
@@ -47,14 +50,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 서버에서 현재 로그인 상태 확인
   const checkAuth = async () => {
     setIsLoading(true);
-    const res = await fetch("/api/auth/cookie");
-    if (res.ok) {
-      const data = await res.json();
-      setUser(data.user);
-    } else {
+    try {
+      const res = await fetch("/api/auth/cookie");
+      if (res.ok) {
+        const authData = await res.json();
+
+        // 프로필 정보 가져오기
+        const profileRes = await fetch("/api/auth/profile");
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+
+          // 기존 유저 정보 + 프로필 정보 병합
+          setUser({ ...authData.user, ...profileData });
+        } else {
+          setUser(authData.user);
+        }
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error("checkAuth 오류:", error);
       setUser(null);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {

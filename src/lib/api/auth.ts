@@ -42,3 +42,21 @@ export async function fetchSession() {
     return null;
   }
 }
+
+// 유저 정보 가져오기
+export async function fetchUserInfo() {
+  try {
+    const res = await fetch("/api/auth/profile", {
+      credentials: "include",
+    });
+
+    if (!res.ok) throw new Error("세션 없음");
+
+    const data = await res.json();
+
+    return data.userInfo;
+  } catch (error) {
+    console.error("fetchUserInfo 오류:", error);
+    return null;
+  }
+}
