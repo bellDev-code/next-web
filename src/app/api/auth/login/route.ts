@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -10,9 +11,18 @@ export async function POST(req: Request) {
     const { email, password } = await req.json();
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user || user.password !== password) {
+    if (!user) {
       return NextResponse.json(
         { error: "이메일 또는 비밀번호가 일치하지 않습니다." },
+        { status: 400 }
+      );
+    }
+
+    // 해쉬 검증
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return NextResponse.json(
+        { error: "비밀번호가 일치하지 않습니다." },
         { status: 400 }
       );
     }

@@ -6,8 +6,10 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { signUpUser } from "@/lib/api/auth";
 import { signUpSchema } from "@/lib/validation/authSchema";
+import { useRouter } from "next/navigation";
 
 export default function SignForm() {
+  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -22,8 +24,10 @@ export default function SignForm() {
   const mutation = useMutation({
     mutationFn: signUpUser,
     onSuccess: () => {
-      setSuccessMessage("회원가입이 완료되었습니다! 로그인해주세요.");
-      setErrorMessage("");
+      setSuccessMessage(
+        "회원가입이 완료되었습니다! 로그인 페이지로 이동합니다."
+      );
+      router.push("/login");
     },
     onError: (error: any) => {
       setErrorMessage(error.message || "회원가입 중 오류가 발생했습니다.");

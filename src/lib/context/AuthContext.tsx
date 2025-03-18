@@ -9,6 +9,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  isLoading: boolean;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 로그인 함수
   const login = async (email: string, password: string) => {
@@ -44,6 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 서버에서 현재 로그인 상태 확인
   const checkAuth = async () => {
+    setIsLoading(true);
     const res = await fetch("/api/auth/cookie");
     if (res.ok) {
       const data = await res.json();
@@ -51,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setUser(null);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -58,7 +62,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout, checkAuth }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, setUser, login, logout, checkAuth }}
+    >
       {children}
     </AuthContext.Provider>
   );

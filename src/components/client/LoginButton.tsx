@@ -4,7 +4,10 @@ import Link from "next/link";
 import { useAuth } from "@/lib/context/AuthContext";
 
 export default function LoginButton() {
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
+
+  if (isLoading) return null;
+
   return user ? (
     <div className="flex justify-between">
       <p className="text-gray-700 font-medium pr-3">{user.email}</p>

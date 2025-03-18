@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -19,6 +20,9 @@ export async function POST(req: Request) {
       );
     }
 
+    // 해쉬 함수
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // 유저 생성
     const newUser = await prisma.user.create({
       data: {
@@ -26,7 +30,7 @@ export async function POST(req: Request) {
         gender,
         height,
         weight,
-        password, // 보안을 위해 나중에 bcrypt 적용 필요!
+        password: hashedPassword,
       },
     });
 
