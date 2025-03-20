@@ -1,4 +1,5 @@
 "use client";
+
 import { useAuth } from "@/lib/context/AuthContext";
 import { useForm } from "react-hook-form";
 
@@ -32,7 +33,7 @@ export default function ProfileForm() {
         </div>
 
         {/* 기록 입력 폼 */}
-        <h3 className="text-xl font-semibold mt-6 mb-2">달리기 기록 입력</h3>
+        {/* <h3 className="text-xl font-semibold mt-6 mb-2">달리기 기록 입력</h3>
         <form className="space-y-4">
           <div>
             <label className="block">5K 기록 (분:초)</label>
@@ -76,7 +77,7 @@ export default function ProfileForm() {
           >
             기록 저장
           </button>
-        </form>
+        </form> */}
       </div>
     </div>
   );

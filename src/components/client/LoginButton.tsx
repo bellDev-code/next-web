@@ -12,7 +12,7 @@ export default function LoginButton() {
     <div className="flex justify-between">
       <Link
         href="/profile"
-        className="text-gray-700 font-medium pr-3 cursor-pointer"
+        className="text-gray-700 font-medium pr-3 hover:underline cursor-pointer "
       >
         {user.email}
       </Link>
