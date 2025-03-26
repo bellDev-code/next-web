@@ -41,7 +41,7 @@ const getBaseTime = () => {
 
 // 필요한 기상 요소 목록
 const WEATHER_CATEGORIES = [
-  "TMP", // 기온 (°C)
+  "T1H", // 기온 (°C)
   "UUU", // 동서 바람성분 (m/s)
   "VVV", // 남북 바람성분 (m/s)
   "WSD", // 풍속 (m/s)
@@ -107,7 +107,7 @@ export async function getWeather(nx = 54, ny = 125) {
         return acc;
       },
       {
-        TMP: null,
+        T1H: null,
         UUU: null,
         VVV: null,
         WSD: null,
@@ -116,7 +116,7 @@ export async function getWeather(nx = 54, ny = 125) {
         POP: null,
         REH: null,
       } as {
-        TMP: string | null;
+        T1H: string | null;
         UUU: string | null;
         VVV: string | null;
         WSD: string | null;
